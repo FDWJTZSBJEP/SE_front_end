@@ -1,6 +1,6 @@
 # vue-se
 
-This template should help get you started developing with Vue 3 in Vite.
+软件工程课设项目前端代码
 
 ## Recommended IDE Setup
 
