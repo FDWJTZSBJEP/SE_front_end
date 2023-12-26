@@ -23,6 +23,8 @@ import AppAside from "./AppAside.vue";
 .common-layout {
   height: 100vh;
   font-family: 'Arial', sans-serif;
+  width:250%;
+  margin-left: 0;
 
   .el-container {
     height: 100%;
@@ -33,6 +35,8 @@ import AppAside from "./AppAside.vue";
     background-color: #F0F2F5;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    width: 250%;
+
   }
 
   .el-aside {
