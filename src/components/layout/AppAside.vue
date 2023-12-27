@@ -31,13 +31,15 @@
   background-color: #f0f2f5;
   height: 100vh;
   width: 200px;
-  padding: 20px;
+  padding: 0px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  margin-left: 0%;
 }
 
 .menu {
   background-color: #f0f2f5;
-  width: 180px;
+  width: 200px;
+  margin-left: -10%;
 }
 
 .el-menu-item {
@@ -45,6 +47,7 @@
   align-items: center;
   padding: 10px;
   transition: background-color 0.3s;
+  width: 200px;
 }
 
 .el-menu-item:hover {
@@ -52,7 +55,7 @@
 }
 
 .el-icon {
-  margin-right: 10px;
+  margin-right: 0px;
   font-size: 18px;
   color: #409eff;
 }

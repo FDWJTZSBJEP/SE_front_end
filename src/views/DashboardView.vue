@@ -1,14 +1,18 @@
 <template>
   <div>
+  <el-container>
     <!-- 折线图容器 -->
-    <div id="line-chart" style="width: 400px; height: 300px;"></div>
+    <div id="line-chart" style="width: 450px; height: 300px;"></div>
 
     <!-- 饼状图容器 -->
-    <div id="pie-chart" style="width: 400px; height: 300px;"></div>
+    <div id="pie-chart" style="width: 450px; height: 300px;"></div>
 
     <!-- 柱状图容器 -->
-    <div id="bar-chart" style="width: 400px; height: 300px;"></div>
+    <div id="bar-chart" style="width: 450px; height: 300px;"></div>
+  </el-container>
+
   </div>
+
 </template>
 
 <script setup lang="ts">
