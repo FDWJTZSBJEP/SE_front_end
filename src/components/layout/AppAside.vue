@@ -5,16 +5,16 @@
   <el-aside class="aside">
     <el-menu router class="menu">
       <el-menu-item index="/dashboard">
-        <el-icon><IEpSetting /></el-icon><span>社区发展趋势</span>
+        <el-icon><House /></el-icon><span>社区发展趋势</span>
       </el-menu-item>
       <el-menu-item index="/analyze">
-        <el-icon><IEpSetting /></el-icon><span>交叉数据分析</span>
+        <el-icon><Connection /></el-icon><span>交叉数据分析</span>
       </el-menu-item>
       <el-menu-item index="/show">
-        <el-icon><IEpSetting /></el-icon><span>社区排名展示</span>
+        <el-icon><Histogram /></el-icon><span>社区排名展示</span>
       </el-menu-item>
       <el-menu-item index="/about">
-        <el-icon><IEpSetting /></el-icon><span>关于我们</span>
+        <el-icon><Promotion /></el-icon><span>关于我们</span>
       </el-menu-item>
     </el-menu>
   </el-aside>

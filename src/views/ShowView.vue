@@ -1,157 +1,119 @@
 <template>
+  <div class="hot-ranking">
+    <h2 class="ranking-title">热门排名</h2>
 
+    <!-- 热门语言排名 -->
+    <div class="ranking-section">
+      <h3 class="section-title">热门语言</h3>
+      <ul class="ranking-list">
+        <li v-for="(language, index) in languageRanking" :key="language.id" class="ranking-item">
+          <span class="rank">{{ index + 1 }}</span>
+          <span class="name">{{ language.name }}</span>
+          <span class="score">{{ language.score }}</span>
+        </li>
+      </ul>
+    </div>
 
-  <div>
-    <!-- 折线图容器 -->
-    <div id="line-chart" style="width: 400px; height: 300px;"></div>
+    <!-- 热门项目排名 -->
+    <div class="ranking-section">
+      <h3 class="section-title">热门项目</h3>
+      <ul class="ranking-list">
+        <li v-for="(project, index) in projectRanking" :key="project.id" class="ranking-item">
+          <span class="rank">{{ index + 1 }}</span>
+          <span class="name">{{ project.name }}</span>
+          <span class="score">{{ project.score }}</span>
+        </li>
+      </ul>
+    </div>
 
-    <!-- 饼状图容器 -->
-    <div id="pie-chart" style="width: 400px; height: 300px;"></div>
-
-    <!-- 柱状图容器 -->
-    <div id="bar-chart" style="width: 400px; height: 300px;"></div>
+    <!-- 热门协议排名 -->
+    <div class="ranking-section">
+      <h3 class="section-title">热门协议</h3>
+      <ul class="ranking-list">
+        <li v-for="(protocol, index) in protocolRanking" :key="protocol.id" class="ranking-item">
+          <span class="rank">{{ index + 1 }}</span>
+          <span class="name">{{ protocol.name }}</span>
+          <span class="score">{{ protocol.score }}</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
-
-
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import * as echarts from 'echarts';
-import request from "@/utils/request";
-const fetchData = async () => {
-  try {
-    const response = await request({
-      method: "GET",
-      url: "https://mock.apifox.com/m1/3058331-0-default/administrator/staff-info/message",
-    });
-    console.log(response);
-
-    // 将获取到的数据存储在 ref 中
-    responseData.value = response.data.data; // 注意这里取得的是 response.data.data
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-};
-const responseData = ref<any[]>([]);
-
-onMounted(() => {
-  fetchData();
-  // 折线图数据
-  const lineChartData = {
-    xAxis: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    series: [10,20,40,30,20,40,12,1],
-  };
-
-  // 饼状图数据
-  const pieChartData = {
-    legendData: ['Category A', 'Category B', 'Category C', 'Category D', 'Category E'],
-    seriesData: [
-      { value: 335, name: 'Category A' },
-      { value: 310, name: 'Category B' },
-      { value: 234, name: 'Category C' },
-      { value: 135, name: 'Category D' },
-      { value: 1548, name: 'Category E' },
-    ],
-  };
-
-  // 柱状图数据
-  const barChartData = {
-    xAxis: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    series: [120, 200, 150, 80, 70, 110, 130],
-  };
-
-  // 初始化图表实例
-  const lineChart = echarts.init(document.getElementById('line-chart'));
-  const pieChart = echarts.init(document.getElementById('pie-chart'));
-  const barChart = echarts.init(document.getElementById('bar-chart'));
-
-  // 渲染折线图
-  renderLineChart(lineChart, lineChartData);
-
-  // 渲染饼状图
-  renderPieChart(pieChart, pieChartData);
-
-  // 渲染柱状图
-  renderBarChart(barChart, barChartData);
-});
-
-// 渲染折线图
-const renderLineChart = (chart: echarts.ECharts, data: { xAxis: string[]; series: number[] }) => {
-  const option = {
-    title: {
-      text: 'Line Chart',
-      left: 'center',
-    },
-    xAxis: {
-      type: 'category',
-      data: data.xAxis,
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [{
-      data: data.series,
-      type: 'line',
-    }],
-  };
-
-  chart.setOption(option);
-};
-
-// 渲染饼状图
-const renderPieChart = (chart: echarts.ECharts, data: { legendData: string[]; seriesData: { value: number; name: string }[] }) => {
-  const option = {
-    title: {
-      text: 'Pie Chart',
-      left: 'center',
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left',
-      data: data.legendData,
-    },
-    series: [{
-      data: data.seriesData,
-      type: 'pie',
-      radius: '50%',
-      center: ['50%', '60%'],
-    }],
-  };
-
-  chart.setOption(option);
-};
-
-// 渲染柱状图
-const renderBarChart = (chart: echarts.ECharts, data: { xAxis: string[]; series: number[] }) => {
-  const option = {
-    title: {
-      text: 'Bar Chart',
-      left: 'center',
-    },
-    xAxis: {
-      type: 'category',
-      data: data.xAxis,
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [{
-      data: data.series,
-      type: 'bar',
-    }],
-  };
-
-  chart.setOption(option);
-};
-</script>
-
-<style>
-.chart-container {
-  margin-top: 20px;
+interface RankingItem {
+  id: number;
+  name: string;
+  score: number;
 }
 
-.echarts-chart {
-  height: 400px;
+const languageRanking: RankingItem[] = [
+  { id: 1, name: 'JavaScript', score: 1200 },
+  { id: 2, name: 'Python', score: 1100 },
+  { id: 3, name: 'Java', score: 1000 },
+  // Add more languages as needed
+];
+
+const projectRanking: RankingItem[] = [
+  { id: 1, name: 'Project A', score: 1500 },
+  { id: 2, name: 'Project B', score: 1400 },
+  { id: 3, name: 'Project C', score: 1300 },
+  // Add more projects as needed
+];
+
+const protocolRanking: RankingItem[] = [
+  { id: 1, name: 'HTTP', score: 800 },
+  { id: 2, name: 'WebSocket', score: 750 },
+  { id: 3, name: 'GraphQL', score: 700 },
+  // Add more protocols as needed
+];
+</script>
+
+<style scoped>
+.hot-ranking {
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.ranking-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.ranking-section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.ranking-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ranking-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px 0;
+}
+
+.rank,
+.score {
+  flex: 0 0 60px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.name {
+  flex: 1;
+  font-size: 16px;
 }
 </style>
