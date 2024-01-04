@@ -1,20 +1,9 @@
 <template>
   <el-tabs type="border-card">
     <el-tab-pane label="语言时间">
-      <div v-if="responseData1.length">
-        <h2>数据展示：</h2>
-        <ul v-for="(item, index) in responseData1" :key="index">
-          <li>
-            <span>{{ item.time }}</span>
-            <ul>
-              <li v-for="(value, key) in item" :key="key" v-if="key !== 'time'">
-                <span>{{ key }}: {{ value }}</span>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <div v-if="responseData1.length === 0" class="loading-message">暂无数据</div>
+      <div v-if="TimeLanguageData.length === 0" class="loading-message">暂无数据</div>
+      <div id="language-time-bar-chart" style="width: 1400px; height: 700px;"></div>
+
     </el-tab-pane>
 
     <el-tab-pane label="国家用户">
@@ -50,29 +39,138 @@
   </el-tabs>
 </template>
 
+
+
 <script setup lang="ts">
 import request from "@/utils/request";
-import { ref, onMounted } from "vue";
+import {ref, onMounted, watch} from "vue";
 import * as echarts from 'echarts';
 
 const pieChartInstance = ref<echarts.ECharts | null>(null);
 const barChartInstance = ref<echarts.ECharts | null>(null);
 
-const responseData1 = ref<any[]>([]);
 const responseData2 = ref<any[]>([]);
 const responseData3 = ref<any[]>([]);
 
-const fetchData1 = async () => {
+
+
+//时间语言相关开始
+const languageTimeBarChartInstance = ref<echarts.ECharts | null>(null);
+const TimeLanguageData = ref<any[]>([]);
+const getTimeLanguageData = async () => {
   try {
     const response = await request({
       method: "GET",
       url: "https://mock.apifox.com/m1/3807087-0-default/language_time1",
     });
-    responseData1.value = response.data.data || [];
+    TimeLanguageData.value = response.data.data || [];
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 };
+
+const renderLanguageTimeBarChart = () => {
+  if (TimeLanguageData.value.length === 0) return;
+  const combinedData = Object.entries(TimeLanguageData.value[0])
+      .filter(([key]) => key !== 'time')
+      .map(([language, value]) => ({ language, value: Number(value) }));
+
+  // 按照数量从小到大排序
+  combinedData.sort((a, b) => b.value - a.value);
+
+  // 分离语言和数量到各自的数组
+  const languages = combinedData.map(item => item.language);
+  const data = combinedData.map(item => item.value);
+
+  const option = {
+    title: {
+      text: `语言使用情况 (${TimeLanguageData.value[0].time})`,
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'axis', // 或者 'item' 根据需要选择
+      axisPointer: {
+        type: 'shadow' // 'shadow'为阴影指示器
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: languages,
+      axisLabel: {
+        rotate: 45, // 旋转标签
+        interval: 0, // 显示所有标签
+      }
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [{
+      data: data,
+      type: 'bar',
+      barWidth : '80%',
+      barGap: '10%', // 设置条形图之间的间隙
+      label: {
+        show: true, // 显示标签
+        position: 'top', // 标签位置
+        formatter: '{c}' // 标签格式，{c}代表数据值
+      }
+    }]
+  };
+
+  const chartDom = document.getElementById('language-time-bar-chart');
+  if (chartDom) {
+    languageTimeBarChartInstance.value = echarts.init(chartDom);
+    languageTimeBarChartInstance.value.setOption(option);
+  }
+};
+
+const sortAndUpdateChart = (index) => {
+  // 获取当前数据点并进行排序
+  const currentData = TimeLanguageData.value[index];
+  const sortedData = Object.entries(currentData)
+      .filter(([key]) => key !== 'time') // 排除'time'
+      .map(([language, value]) => ({ language, value: Number(value) })) // 转换为对象数组
+      .sort((a, b) => b.value - a.value); // 排序
+
+  // 提取排序后的语言和数量
+  const languages = sortedData.map(item => item.language);
+  const values = sortedData.map(item => item.value);
+
+  // 更新图表
+  languageTimeBarChartInstance.value?.setOption({
+    title: {
+      text: `语言使用情况 (${TimeLanguageData.value[index].time})`,
+      left: 'center'
+    },
+    xAxis: {
+      data: languages
+    },
+    series: [{
+      data: values
+    }]
+  });
+};
+
+let currentIndex = 0;
+const startAutoPlay = () => {
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % TimeLanguageData.value.length;
+    sortAndUpdateChart(currentIndex);
+  }, 3000); //每三秒变化
+};
+
+onMounted(() => {
+  getTimeLanguageData();
+  startAutoPlay();
+});
+
+watch(TimeLanguageData, () => {
+  renderLanguageTimeBarChart();
+});
+
+//时间语言相关结束
+
+
 
 const fetchData2 = async () => {
   try {
@@ -136,6 +234,8 @@ const fetchData3 = async () => {
     console.error('Error fetching data:', error);
   }
 };
+
+
 
 const renderBarChart = () => {
   const xAxisData = responseData3.value.map((data) => data.language);
@@ -205,7 +305,7 @@ const renderBarChart = () => {
   barChartInstance.value.setOption(option);
 };
 
-onMounted(fetchData1);
+
 onMounted(fetchData2);
 onMounted(fetchData3);
 
