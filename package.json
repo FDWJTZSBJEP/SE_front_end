@@ -16,11 +16,15 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "axios": "^1.6.2",
+    "chart.js": "^3.9.1",
     "echarts": "^5.4.3",
+    "echarts-gl": "^2.0.9",
     "element-plus": "^2.4.4",
+    "mathjs": "^12.2.1",
     "pinia": "^2.1.7",
     "sass": "^1.69.5",
-    "vue": "^3.3.11",
+    "vue": "^3.4.3",
+    "vue-apexcharts": "^1.6.2",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
