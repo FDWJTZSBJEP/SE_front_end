@@ -1,147 +1,242 @@
 <template>
-  <div>
-    <!-- 折线图容器 -->
-    <div id="line-chart" style="width: 400px; height: 300px;"></div>
+  <el-tabs type="border-card">
+    <el-tab-pane label="语言时间">
+      <div class="employee-info" v-for="time_language in responseData" :key="time_language.time">
+        <p>actionScript: {{ time_language.actionScript }}</p>
+        <p>assembly: {{ time_language.assembly }}</p>
+        <p>batchfile: {{ time_language.batchfile}}</p>
+        <p>c: {{ time_language.c }}</p>
+        <p>c_Plus: {{ time_language.c_Plus }}</p>
+        <p>c_Sharp: {{ time_language.c_Sharp }}</p>
+        <p>cmake: {{ time_language.cmake }}</p>
+        <hr />
+      </div>
+      <div v-if="responseData.length === 0" class="loading-message">暂无数据</div>
+    </el-tab-pane>
 
-    <!-- 饼状图容器 -->
-    <div id="pie-chart" style="width: 400px; height: 300px;"></div>
+    <el-tab-pane label="国家用户">
+      <div>
+        <h1>国家用户分析图</h1>
+        <div id="pie-chart" style="width: 800%; height: 400px;"></div>
+      </div>
+    </el-tab-pane>
 
-    <!-- 柱状图容器 -->
-    <div id="bar-chart" style="width: 400px; height: 300px;"></div>
-  </div>
+    <el-tab-pane label="语言项目">
+      <div id="bar-chart" style="width: 600px; height: 400px;"></div>
+    </el-tab-pane>
+    <el-tab-pane label="社区成员">
+      <!-- 社区成员的内容 -->
+    </el-tab-pane>
+  </el-tabs>
 </template>
 
 <script setup lang="ts">
+import request from "@/utils/request";
 import { ref, onMounted } from "vue";
 import * as echarts from 'echarts';
-import request from "@/utils/request";
-const fetchData = async () => {
+const pieChartInstance = ref<echarts.ECharts | null>(null);
+const barChartInstance = ref<echarts.ECharts | null>(null);
+
+// 使用 ref 存储获取到的数据
+const responseData = ref<any[]>([]);
+
+// 获取语言时间的url
+const fetchData1 = async () => {
   try {
     const response = await request({
       method: "GET",
-      url: "https://mock.apifox.com/m1/3058331-0-default/administrator/staff-info/message",
+      //
+      url: "https://mock.apifox.com/m1/3807087-0-default/language_time?apifoxApiId=137839746",
     });
     console.log(response);
 
     // 将获取到的数据存储在 ref 中
-    responseData.value = response.data.data; // 注意这里取得的是 response.data.data
+    responseData.value = response.data.data || [];
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 };
-const responseData = ref<any[]>([]);
 
-onMounted(() => {
-  fetchData();
-  // 折线图数据
-  const lineChartData = {
-    xAxis: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    series: [10,20,40,30,20,40,12,1],
-  };
+// 获取国家用户的url
+const fetchData2 = async () => {
+  try {
+    const response = await request({
+      method: "GET",
+      //
+      url: "https://mock.apifox.com/m1/3807087-0-default/country_user",
+    });
+    console.log(response);
 
-  // 饼状图数据
-  const pieChartData = {
-    legendData: ['Category A', 'Category B', 'Category C', 'Category D', 'Category E'],
-    seriesData: [
-      { value: 335, name: 'Category A' },
-      { value: 310, name: 'Category B' },
-      { value: 234, name: 'Category C' },
-      { value: 135, name: 'Category D' },
-      { value: 1548, name: 'Category E' },
-    ],
-  };
-
-  // 柱状图数据
-  const barChartData = {
-    xAxis: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    series: [120, 200, 150, 80, 70, 110, 130],
-  };
-
-  // 初始化图表实例
-  const lineChart = echarts.init(document.getElementById('line-chart'));
-  const pieChart = echarts.init(document.getElementById('pie-chart'));
-  const barChart = echarts.init(document.getElementById('bar-chart'));
-
-  // 渲染折线图
-  renderLineChart(lineChart, lineChartData);
-
-  // 渲染饼状图
-  renderPieChart(pieChart, pieChartData);
-
-  // 渲染柱状图
-  renderBarChart(barChart, barChartData);
-});
-
-// 渲染折线图
-const renderLineChart = (chart: echarts.ECharts, data: { xAxis: string[]; series: number[] }) => {
-  const option = {
-    title: {
-      text: 'Line Chart',
-      left: 'center',
-    },
-    xAxis: {
-      type: 'category',
-      data: data.xAxis,
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [{
-      data: data.series,
-      type: 'line',
-    }],
-  };
-
-  chart.setOption(option);
+    // 将获取到的数据存储在 ref 中
+    responseData.value = response.data.data || [];
+    renderPieChart();
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
 };
 
-// 渲染饼状图
-const renderPieChart = (chart: echarts.ECharts, data: { legendData: string[]; seriesData: { value: number; name: string }[] }) => {
+// 绘制国家用户的饼图
+const renderPieChart = () => {
+  const legendData = responseData.value.map((data) => data.location);
+  const seriesData = responseData.value.map((data) => ({ name: data.location, value: data.followers }));
+
   const option = {
     title: {
-      text: 'Pie Chart',
+      text: '国家用户饼图',
       left: 'center',
     },
     legend: {
+      type: 'scroll',
       orient: 'vertical',
-      left: 'left',
-      data: data.legendData,
+      right: 10,
+      top: 20,
+      bottom: 20,
+      data: legendData,
     },
     series: [{
-      data: data.seriesData,
+      name: '国家用户',
       type: 'pie',
-      radius: '50%',
-      center: ['50%', '60%'],
+      radius: '55%',
+      center: ['60%', '70%'],
+      data: seriesData,
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)',
+        },
+      },
     }],
   };
 
-  chart.setOption(option);
+  pieChartInstance.value = echarts.init(document.getElementById('pie-chart'))!;
+  pieChartInstance.value.setOption(option);
 };
 
-// 渲染柱状图
-const renderBarChart = (chart: echarts.ECharts, data: { xAxis: string[]; series: number[] }) => {
+// 获取语言项目的url
+const fetchData3 = async () => {
+  try {
+    const response = await request({
+      method: "GET",
+      //
+      url: "https://mock.apifox.com/m1/3807087-0-default/language_projectNum",
+    });
+    console.log(response);
+
+    // 将获取到的数据存储在 ref 中
+    responseData.value = response.data.data || [];
+    renderBarChart();
+    
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+
+// 绘制国家用户的条形图
+const renderBarChart = () => {
+  // 提取横坐标和纵坐标数据
+  const xAxisData = responseData.value.map((data) => data.language);
+  const seriesData = responseData.value.map((data) => ({ name: data.language, value: data.project_num }));
+
+  // 配置项
   const option = {
     title: {
-      text: 'Bar Chart',
+      text: '国家用户条形图',
       left: 'center',
     },
     xAxis: {
-      type: 'category',
-      data: data.xAxis,
+      data: xAxisData,
+      axisLabel: {
+        inside: true,
+        color: '#fff'
+      },
+      axisTick: {
+        show: false
+      },
+      axisLine: {
+        show: false
+      },
+      z: 10
     },
     yAxis: {
-      type: 'value',
+      axisLine: {
+        show: false
+      },
+      axisTick: {
+        show: false
+      },
+      axisLabel: {
+        color: '#999'
+      }
     },
-    series: [{
-      data: data.series,
-      type: 'bar',
-    }],
+    dataZoom: [
+      {
+        type: 'inside'
+      }
+    ],
+    series: [
+      {
+        type: 'bar',
+        showBackground: true,
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: '#83bff6' },
+            { offset: 0.5, color: '#188df0' },
+            { offset: 1, color: '#188df0' }
+          ])
+        },
+        emphasis: {
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#2378f7' },
+              { offset: 0.7, color: '#2378f7' },
+              { offset: 1, color: '#83bff6' }
+            ])
+          }
+        },
+        data: seriesData
+      }
+    ]
   };
 
-  chart.setOption(option);
+  // 初始化并设置图表
+  barChartInstance.value = echarts.init(document.getElementById('bar-chart'))!;
+  barChartInstance.value.setOption(option);
 };
+
+
+
+
+// 在组件挂载后立即获取数据
+onMounted(fetchData1);
+onMounted(fetchData2);
+onMounted(fetchData3);
+
 </script>
 
 <style>
-/* 在这里添加样式 */
+.el-tabs__item {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.employee-info {
+  margin-top: 20px;
+}
+
+.employee-info p {
+  margin-bottom: 8px;
+}
+
+.employee-info hr {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+.loading-message {
+  font-size: 18px;
+  color: #888;
+  margin-top: 20px;
+}
 </style>

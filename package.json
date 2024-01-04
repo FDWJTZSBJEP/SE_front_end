@@ -18,9 +18,11 @@
     "axios": "^1.6.2",
     "echarts": "^5.4.3",
     "element-plus": "^2.4.4",
+    "mathjs": "^12.2.1",
     "pinia": "^2.1.7",
     "sass": "^1.69.5",
-    "vue": "^3.3.11",
+    "vue": "^3.4.3",
+    "vue-apexcharts": "^1.6.2",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
