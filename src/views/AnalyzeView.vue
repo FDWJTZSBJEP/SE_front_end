@@ -1,17 +1,20 @@
 <template>
   <el-tabs type="border-card">
     <el-tab-pane label="语言时间">
-      <div class="employee-info" v-for="time_language in responseData" :key="time_language.time">
-        <p>actionScript: {{ time_language.actionScript }}</p>
-        <p>assembly: {{ time_language.assembly }}</p>
-        <p>batchfile: {{ time_language.batchfile}}</p>
-        <p>c: {{ time_language.c }}</p>
-        <p>c_Plus: {{ time_language.c_Plus }}</p>
-        <p>c_Sharp: {{ time_language.c_Sharp }}</p>
-        <p>cmake: {{ time_language.cmake }}</p>
-        <hr />
+      <div v-if="responseData1.length">
+        <h2>数据展示：</h2>
+        <ul v-for="(item, index) in responseData1" :key="index">
+          <li>
+            <span>{{ item.time }}</span>
+            <ul>
+              <li v-for="(value, key) in item" :key="key" v-if="key !== 'time'">
+                <span>{{ key }}: {{ value }}</span>
+              </li>
+            </ul>
+          </li>
+        </ul>
       </div>
-      <div v-if="responseData.length === 0" class="loading-message">暂无数据</div>
+      <div v-if="responseData1.length === 0" class="loading-message">暂无数据</div>
     </el-tab-pane>
 
     <el-tab-pane label="国家用户">
@@ -24,6 +27,7 @@
     <el-tab-pane label="语言项目">
       <div id="bar-chart" style="width: 600px; height: 400px;"></div>
     </el-tab-pane>
+
     <el-tab-pane label="国家粉丝">
       <!-- 社区成员的内容 -->
     </el-tab-pane>
@@ -50,51 +54,42 @@
 import request from "@/utils/request";
 import { ref, onMounted } from "vue";
 import * as echarts from 'echarts';
+
 const pieChartInstance = ref<echarts.ECharts | null>(null);
 const barChartInstance = ref<echarts.ECharts | null>(null);
 
-// 使用 ref 存储获取到的数据
-const responseData = ref<any[]>([]);
+const responseData1 = ref<any[]>([]);
+const responseData2 = ref<any[]>([]);
+const responseData3 = ref<any[]>([]);
 
-// 获取语言时间的url
 const fetchData1 = async () => {
   try {
     const response = await request({
       method: "GET",
-      //
-      url: "https://mock.apifox.com/m1/3807087-0-default/language_time?apifoxApiId=137839746",
+      url: "https://mock.apifox.com/m1/3807087-0-default/language_time1",
     });
-    console.log(response);
-
-    // 将获取到的数据存储在 ref 中
-    responseData.value = response.data.data || [];
+    responseData1.value = response.data.data || [];
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 };
 
-// 获取国家用户的url
 const fetchData2 = async () => {
   try {
     const response = await request({
       method: "GET",
-      //
       url: "https://mock.apifox.com/m1/3807087-0-default/country_user",
     });
-    console.log(response);
-
-    // 将获取到的数据存储在 ref 中
-    responseData.value = response.data.data || [];
+    responseData2.value = response.data.data || [];
     renderPieChart();
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 };
 
-// 绘制国家用户的饼图
 const renderPieChart = () => {
-  const legendData = responseData.value.map((data) => data.location);
-  const seriesData = responseData.value.map((data) => ({ name: data.location, value: data.followers }));
+  const legendData = responseData2.value.map((data) => data.location);
+  const seriesData = responseData2.value.map((data) => ({ name: data.location, value: data.followers }));
 
   const option = {
     title: {
@@ -129,32 +124,23 @@ const renderPieChart = () => {
   pieChartInstance.value.setOption(option);
 };
 
-// 获取语言项目的url
 const fetchData3 = async () => {
   try {
     const response = await request({
       method: "GET",
-      //
       url: "https://mock.apifox.com/m1/3807087-0-default/language_projectNum",
     });
-    console.log(response);
-
-    // 将获取到的数据存储在 ref 中
-    responseData.value = response.data.data || [];
+    responseData3.value = response.data.data || [];
     renderBarChart();
-    
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 };
 
-// 绘制国家用户的条形图
 const renderBarChart = () => {
-  // 提取横坐标和纵坐标数据
-  const xAxisData = responseData.value.map((data) => data.language);
-  const seriesData = responseData.value.map((data) => ({ name: data.language, value: data.project_num }));
+  const xAxisData = responseData3.value.map((data) => data.language);
+  const seriesData = responseData3.value.map((data) => ({ name: data.language, value: data.project_num }));
 
-  // 配置项
   const option = {
     title: {
       text: '国家用户条形图',
@@ -215,15 +201,10 @@ const renderBarChart = () => {
     ]
   };
 
-  // 初始化并设置图表
   barChartInstance.value = echarts.init(document.getElementById('bar-chart'))!;
   barChartInstance.value.setOption(option);
 };
 
-
-
-
-// 在组件挂载后立即获取数据
 onMounted(fetchData1);
 onMounted(fetchData2);
 onMounted(fetchData3);
