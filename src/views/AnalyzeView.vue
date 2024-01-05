@@ -286,7 +286,6 @@ const renderTimeOperateCommitChart= () =>{
 
 onMounted(()=>{
   getTimeOperateCommitData()
-
 }
 )
 
