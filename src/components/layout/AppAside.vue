@@ -10,11 +10,11 @@
       <el-menu-item index="/analyze">
         <el-icon><Connection /></el-icon><span>交叉数据分析</span>
       </el-menu-item>
-      <el-menu-item index="/show">
+      <el-menu-item index="/rank">
         <el-icon><Histogram /></el-icon><span>社区排名展示</span>
       </el-menu-item>
       <el-menu-item index="/about">
-        <el-icon><Promotion /></el-icon><span>关于我们</span>
+        <el-icon><Promotion /></el-icon><span>社区预测</span>
       </el-menu-item>
     </el-menu>
   </el-aside>

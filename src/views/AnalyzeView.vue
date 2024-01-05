@@ -31,10 +31,6 @@
       <p :style="{ fontSize: '20px', color: '#333', fontWeight: 'bold' }">总收藏数: {{ totalStarredNumRef }}</p>
     </el-tab-pane>
 
-    <el-tab-pane label="语言查阅">
-      <h1>语言查阅量分析图</h1>
-      <div id="watch-language-chart" style="width: 1000px; height: 600px;"></div>
-    </el-tab-pane>
   </el-tabs>
 </template>
 
@@ -371,7 +367,7 @@ const renderBarChart = () => {
 
   const option = {
     title: {
-      text: '国家用户条形图',
+      text: '语言项目条形图',
       left: 'center',
     },
     xAxis: {
@@ -456,7 +452,7 @@ const getStarLanguageData = async () => {
 };
 const renderlanguageStarChart = () => {
   const legendData = StarLanguageData.value.map((data) => data.language);
-  const seriesData = StarLanguageData.value.map((data) => ({ name: data.language, value: data.starred_num }));
+  const seriesData = StarLanguageData.value.map((data) => ({ name: data.language, value: data.star }));
   // 计算 seriesData 中 starred_num 的总和
   const totalStarredNum = seriesData.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0);
   // 存储在 ref 中
@@ -543,110 +539,7 @@ const renderlanguageStarChart = () => {
 onMounted(getStarLanguageData);
 // 语言收藏量部分结束
 
-// 语言查阅量部分开始
-const languageWatchChart = ref<echarts.ECharts | null>(null);
-const WatchLanguageData = ref<any[]>([]);
-const getWatchLanguageData = async () => {
-  try {
-    const response = await request({
-      method: "GET",
-      url: "https://mock.apifox.com/m1/3807087-0-default/language_watch",
-    });
-    WatchLanguageData.value = response.data.data || [];
-    renderlanguageWatchChart();
-    // console.log(WatchLanguageData.value);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-};
-const renderlanguageWatchChart = () => {
-  const legendData = WatchLanguageData.value.map((data) => data.language);
-  const seriesData = WatchLanguageData.value.map((data) => ({ name: data.language, value: data.watch_num }));
-  // 计算 seriesData 中 starred_num 的总和
-  const totalStarredNum = seriesData.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0);
-  // 存储在 ref 中
-  totalStarredNumRef.value = totalStarredNum;
-  // console.log('Total Starred Num:', totalStarredNumRef.value);
 
-  const option = {
-  title: {
-    text: '语言查阅量饼图',
-    left: 'center',
-  },
-  legend: {
-    type: 'scroll',
-    orient: 'vertical',
-    right: 100,
-    top: 20,
-    bottom: 20,
-    data: legendData,
-  },
-  series: [
-    {
-      name: '编程语言',
-      type: 'pie',
-      selectedMode: 'single',
-      radius: [0, '30%'],
-      label: {
-        position: 'inner',
-        fontSize: 14,
-      },
-      labelLine: {
-        show: false,
-      },
-      data: seriesData,
-    },
-    {
-      name: '编程语言',
-      type: 'pie',
-      radius: ['45%', '60%'],
-      labelLine: {
-        length: 50,
-      },
-      label: {
-        formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}:}{c}  {per|{d}%}  ',
-        backgroundColor: '#F6F8FC',
-        borderColor: '#8C8D8E',
-        borderWidth: 1,
-        borderRadius: 4,
-        rich: {
-          a: {
-            color: '#6E7079',
-            lineHeight: 22,
-            align: 'center',
-          },
-          hr: {
-            borderColor: '#8C8D8E',
-            width: '100%',
-            borderWidth: 1,
-            height: 0,
-          },
-          b: {
-            color: '#4C5058',
-            fontSize: 14,
-            fontWeight: 'bold',
-            lineHeight: 33,
-          },
-          per: {
-            color: '#fff',
-            backgroundColor: '#4C5058',
-            padding: [3, 4],
-            borderRadius: 4,
-          },
-        },
-      },
-      data: seriesData,
-    },
-  ],
-};
-
-
-  languageWatchChart.value = echarts.init(document.getElementById('watch-language-chart'))!;
-  languageWatchChart.value.setOption(option);
-};
-
-onMounted(getWatchLanguageData);
-// 语言查阅量部分结束
 </script>
 
 <style>

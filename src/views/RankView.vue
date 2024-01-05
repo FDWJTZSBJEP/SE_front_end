@@ -16,15 +16,15 @@
     <el-col>
       <el-card>
         <el-table :data="ProjectData"  height="400" style="width: 100%">
-          <el-table-column prop="rank" label="Rank" width="200" />
-          <el-table-column label="Project" width="650">
+          <el-table-column prop="rank" label="Rank" width="180%" />
+          <el-table-column label="Project" width="600%">
             <template v-slot="scope">
               <div class="project-name">{{ scope.row.name }}</div>
               <div class="project-description">{{ scope.row.description }}</div>
             </template>
           </el-table-column>
-          <el-table-column width="180"/>
-          <el-table-column label="Watch" width="180">
+          <el-table-column width="180%"/>
+          <el-table-column label="Watch" width="180%">
             <template v-slot="scope">
               <div class="project-watch-and-star">
                 <span class="material-icons">visibility</span>
@@ -32,7 +32,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="Star" width="180">
+          <el-table-column label="Star" width="180%">
             <template v-slot="scope">
               <div class="project-watch-and-star">
                 <span class="material-icons">star</span>{{ scope.row.star }}
