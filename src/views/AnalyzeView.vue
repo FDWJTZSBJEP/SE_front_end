@@ -301,6 +301,7 @@ const fetchData2 = async () => {
       url: "https://mock.apifox.com/m1/3807087-0-default/country_user",
     });
     responseData2.value = response.data.data || [];
+    // console.log(responseData2)
     renderPieChart();
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -309,7 +310,7 @@ const fetchData2 = async () => {
 
 const renderPieChart = () => {
   const legendData = responseData2.value.map((data) => data.location);
-  const seriesData = responseData2.value.map((data) => ({ name: data.location, value: data.followers }));
+  const seriesData = responseData2.value.map((data) => ({ name: data.location, value: data.users }));
 
   const option = {
     title: {
@@ -529,6 +530,13 @@ const renderlanguageStarChart = () => {
       data: seriesData,
     },
   ],
+  toolbox: {  // Add the toolbox property here
+    feature: {
+      saveAsImage: {},
+      dataZoom: {},
+      restore: {},
+    },
+  },
 };
 
 
